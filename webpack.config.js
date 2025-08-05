@@ -22,6 +22,7 @@ module.exports = {
         new CopyPlugin({
             patterns: [
                 { from: 'src/index.html', to: 'index.html' },
+                { from: 'src/password.html', to: 'password.html' },
                 { from: 'src/styles.css', to: 'styles.css' },
                 { from: 'vids', to: 'vids' }
             ],

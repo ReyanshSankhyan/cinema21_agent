@@ -6,7 +6,7 @@ const fs = require("fs");
 const multer = require("multer");
 const { ElevenLabsClient } = require("@elevenlabs/elevenlabs-js");
 const axios = require("axios");
-const { createClient } = require("@supabase/supabase-js");
+
 const FormData = require('form-data');
 
 dotenv.config();
@@ -27,10 +27,7 @@ const upload = multer({ dest: "uploads/" });
 
 const client = new ElevenLabsClient({ apiKey: process.env.XI_API_KEY });
 
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_API_KEY);
 
-// In-memory chat log for demo (replace with persistent storage for production)
-let chatLog = [];
 
 const EXPRESSIVE_VOICE_SETTINGS = {
   stability: 0.3,
@@ -663,6 +660,22 @@ app.get("/api/getAgentId", (req, res) => {
   });
 });
 
+// Password verification endpoint
+app.post("/api/verify-password", (req, res) => {
+  const { password } = req.body;
+  const correctPassword = process.env.WEBSITE_PASSWORD;
+  
+  if (!correctPassword) {
+    return res.status(500).json({ error: "Password not configured" });
+  }
+  
+  if (password === correctPassword) {
+    res.json({ success: true });
+  } else {
+    res.status(401).json({ error: "Incorrect password" });
+  }
+});
+
 app.get("/api/voice", (req, res) => {
   res.json({ voiceId: voiceId || null });
 });
@@ -760,6 +773,11 @@ app.get("/api/conversation-summary", async (req, res) => {
     }
   }
   return res.status(500).json({ error: lastError || 'Timeout waiting for conversation to complete.' });
+});
+
+// Serve password.html for password route
+app.get("/password.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../dist/password.html"));
 });
 
 // Serve index.html for all other routes

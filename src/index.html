@@ -51,6 +51,12 @@
             <div id="orderConfirmationContent"></div>
         </div>
     </div>
+    <script>
+        // Check authentication before loading the main app
+        if (!sessionStorage.getItem('authenticated')) {
+            window.location.href = '/password.html';
+        }
+    </script>
     <script src="/static/bundle.js"></script>
 </body>
 </html>
