@@ -680,6 +680,7 @@ app.get("/api/getAgentId", (req, res) => {
 
 // Password verification endpoint
 app.post("/api/verify-password", (req, res) => {
+  console.log("ENV PASSWORD:", process.env.PASSWORD);
   const { password } = req.body;
   const correctPassword = process.env.WEBSITE_PASSWORD;
   
