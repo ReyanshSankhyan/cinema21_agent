@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinema XXI Agent</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="top-bar">
+        <div class="top-bar-title">CINEMA XXI AGENT</div>
+        <div class="top-bar-controls">
+            <button id="startButton" class="button">Start Conversation</button>
+            <button id="menuButton" class="menu-button">☰</button>
+        </div>
+        <div id="menuBox" class="menu-box">
+            <div class="menu-item">
+                <span id="connectionStatus" class="status">Disconnected</span>
+            </div>
+            <div class="menu-item">
+                <span id="speakingStatus" class="speaking-status">Agent Silent</span>
+            </div>
+            <div class="menu-item">
+                <button id="deleteAllButton" class="button">Delete All</button>
+            </div>
+        </div>
+    </div>
+    <div class="content-area">
+        <div class="main-conversation-area" id="main-conversation-area">
+            <div id="avatar" class="avatar">
+                <video id="avatar-video" autoplay muted>
+                    <source src="/static/vids/idle01.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div class="cart-panel" id="cart-panel"></div>
+    </div>
+    <div class="bottom-panel" id="bottom-panel" style="display: none;">
+        <div class="bottom-panel-content" id="bottom-panel-content"></div>
+    </div>
+    <div id="conversationSummaryModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span id="closeSummaryModal" class="close">&times;</span>
+            <h2>Conversation Summary</h2>
+            <div id="conversationSummaryContent">Loading...</div>
+        </div>
+    </div>
+    <div id="orderConfirmationModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span onclick="window.closeOrderConfirmationModal()" class="close">&times;</span>
+            <div id="orderConfirmationContent"></div>
+        </div>
+    </div>
+    <script src="/static/bundle.js"></script>
+</body>
+</html>
