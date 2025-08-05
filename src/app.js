@@ -8,6 +8,30 @@ let lastToolData = null;
 let currentVideoType = 'idle'; // 'idle' or 'talk'
 let isVideoPlaying = false;
 let isToolVideoPlaying = false; // Track when tool video is playing
+
+// Video URL mapping
+const videoUrls = {
+    idle: [
+        'https://files.cekat.ai/idle01_WdhEBA.mp4',
+        'https://files.cekat.ai/idle02_wzwOwW.mp4',
+        'https://files.cekat.ai/idle03_hSgkmT.mp4',
+        'https://files.cekat.ai/idle04_fvKDOd.mp4'
+    ],
+    talk: [
+        'https://files.cekat.ai/talk01_zJhWdX.mp4',
+        'https://files.cekat.ai/talk02_ZbJZsx.mp4',
+        'https://files.cekat.ai/talk03_nGR0b5.mp4'
+    ],
+    food: 'https://files.cekat.ai/food01_hEuNQr.mp4',
+    cart: 'https://files.cekat.ai/cart01_UNaXIH.mp4',
+    movie: 'https://files.cekat.ai/movie01_CPEwjH.mp4',
+    order: 'https://files.cekat.ai/order01_iXSyRa.mp4'
+};
+
+// Video loading system
+let videosLoaded = 0;
+let totalVideos = 0;
+let allVideosLoaded = false;
 const toolOrder = [
   'show_cinemas_showtimes',
   'show_food_items',
@@ -321,16 +345,81 @@ window.closeTrailerModal = closeTrailerModal;
 
 
 
+// Video loading system
+function loadAllVideos() {
+    const loadingOverlay = document.getElementById('loading-overlay');
+    const loadingText = document.querySelector('.loading-text');
+    
+    // Calculate total videos to load
+    totalVideos = videoUrls.idle.length + videoUrls.talk.length + 4; // +4 for tool videos
+    
+    // Create video elements for preloading
+    const videoElements = [];
+    
+    // Load idle videos
+    videoUrls.idle.forEach(url => {
+        const video = document.createElement('video');
+        video.src = url;
+        video.preload = 'auto';
+        video.muted = true;
+        videoElements.push(video);
+    });
+    
+    // Load talk videos
+    videoUrls.talk.forEach(url => {
+        const video = document.createElement('video');
+        video.src = url;
+        video.preload = 'auto';
+        video.muted = true;
+        videoElements.push(video);
+    });
+    
+    // Load tool videos
+    const toolVideoUrls = [videoUrls.food, videoUrls.cart, videoUrls.movie, videoUrls.order];
+    toolVideoUrls.forEach(url => {
+        const video = document.createElement('video');
+        video.src = url;
+        video.preload = 'auto';
+        video.muted = true;
+        videoElements.push(video);
+    });
+    
+    // Track loading progress
+    videoElements.forEach(video => {
+        video.addEventListener('loadeddata', () => {
+            videosLoaded++;
+            const progress = Math.round((videosLoaded / totalVideos) * 100);
+            loadingText.textContent = `Loading videos... ${progress}%`;
+            
+            if (videosLoaded >= totalVideos) {
+                allVideosLoaded = true;
+                loadingOverlay.style.display = 'none';
+                // Enable the start button
+                updateStartButton(true);
+            }
+        });
+        
+        video.addEventListener('error', () => {
+            console.error('Failed to load video:', video.src);
+            videosLoaded++;
+            if (videosLoaded >= totalVideos) {
+                allVideosLoaded = true;
+                loadingOverlay.style.display = 'none';
+                updateStartButton(true);
+            }
+        });
+    });
+}
+
 // Video avatar system
 function getRandomVideo(type) {
-    let maxVideos;
     if (type === 'talk') {
-        maxVideos = 3; // Only 3 talk videos available
+        const randomIndex = Math.floor(Math.random() * videoUrls.talk.length);
+        return videoUrls.talk[randomIndex];
     } else {
-        maxVideos = 4; // 4 idle videos available
+        const randomIndex = Math.floor(Math.random() * videoUrls.idle.length);
+        return videoUrls.idle[randomIndex];
     }
-    const videoNumber = Math.floor(Math.random() * maxVideos) + 1;
-    return `/static/vids/${type}0${videoNumber}.mp4`;
 }
 
 function playVideo(videoType) {
@@ -388,7 +477,7 @@ async function playFoodVideo() {
     isToolVideoPlaying = true;
     
     // Play food video
-    videoElement.src = '/static/vids/food01.mp4';
+    videoElement.src = videoUrls.food;
     videoElement.load();
     await playVideoWithRetryAsync(videoElement);
     
@@ -437,7 +526,7 @@ async function playCartVideo() {
     isToolVideoPlaying = true;
     
     // Play cart video
-    videoElement.src = '/static/vids/cart01.mp4';
+    videoElement.src = videoUrls.cart;
     videoElement.load();
     await playVideoWithRetryAsync(videoElement);
     
@@ -468,7 +557,7 @@ async function playMovieVideo() {
     isToolVideoPlaying = true;
     
     // Play movie video
-    videoElement.src = '/static/vids/movie01.mp4';
+    videoElement.src = videoUrls.movie;
     videoElement.load();
     await playVideoWithRetryAsync(videoElement);
     
@@ -499,7 +588,7 @@ async function playOrderVideo() {
     isToolVideoPlaying = true;
     
     // Play order video
-    videoElement.src = '/static/vids/order01.mp4';
+    videoElement.src = videoUrls.order;
     videoElement.load();
     await playVideoWithRetryAsync(videoElement);
     
@@ -649,14 +738,16 @@ function updateSpeakingStatus(mode) {
 
 function updateStartButton(isActive) {
     const startButton = document.getElementById('startButton');
-    if (isActive) {
-        startButton.textContent = 'End Conversation';
-        startButton.classList.add('end');
-    } else {
-        startButton.textContent = 'Start Conversation';
-        startButton.classList.remove('end');
+    if (startButton) {
+        if (isActive) {
+            startButton.textContent = 'End Conversation';
+            startButton.classList.add('end');
+        } else {
+            startButton.textContent = 'Start Conversation';
+            startButton.classList.remove('end');
+        }
+        startButton.disabled = !isActive;
     }
-    startButton.disabled = false;
 }
 
 async function startOrEndConversation() {
@@ -739,6 +830,28 @@ async function showConversationSummary() {
 document.getElementById('closeSummaryModal').onclick = function() {
     document.getElementById('conversationSummaryModal').style.display = 'none';
 };
+
+// Initialize video loading when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    // Set start button to initial state (enabled but showing "Start Conversation")
+    const startButton = document.getElementById('startButton');
+    if (startButton) {
+        startButton.textContent = 'Start Conversation';
+        startButton.classList.remove('end');
+        startButton.disabled = true; // Disabled until videos load
+    }
+    // Start loading all videos
+    loadAllVideos();
+});
+
+// Also ensure button is set correctly when window loads
+window.addEventListener('load', function() {
+    const startButton = document.getElementById('startButton');
+    if (startButton && !conversation) {
+        startButton.textContent = 'Start Conversation';
+        startButton.classList.remove('end');
+    }
+});
 window.onclick = function(event) {
     const modal = document.getElementById('conversationSummaryModal');
     if (event.target === modal) {
