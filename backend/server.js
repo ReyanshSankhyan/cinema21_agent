@@ -21,7 +21,15 @@ const VOICE_ID_PATH = path.join(__dirname, "voice_id.json");
 const TOOL_IDS_PATH = path.join(__dirname, "tool_ids.json");
 let agentId = null;
 let voiceId = null;
-let toolIds = { write: null, read: null, whatsapp_order_confirmation: null };
+let toolIds = { 
+  show_cinemas_showtimes: null, 
+  show_food_items: null, 
+  update_cart: null, 
+  place_order: null, 
+  whatsapp_order_confirmation: null, 
+  play_movie_trailer: null, 
+  set_movie_selection: null 
+};
 
 const upload = multer({ dest: "uploads/" });
 
@@ -595,19 +603,27 @@ async function updateAgentWithVoice() {
 function loadToolIds() {
   if (fs.existsSync(TOOL_IDS_PATH)) {
     const data = JSON.parse(fs.readFileSync(TOOL_IDS_PATH, "utf-8"));
-    if (data.show_cinemas_showtimes && data.show_food_items && data.update_cart && data.place_order && data.whatsapp_order_confirmation) {
-    toolIds = { ...toolIds, ...data };
-    console.log('Loaded all tools with IDs:', toolIds);
-    return true;
+    if (data.show_cinemas_showtimes && data.show_food_items && data.update_cart && data.place_order && data.whatsapp_order_confirmation && data.play_movie_trailer && data.set_movie_selection) {
+      toolIds = { ...toolIds, ...data };
+      console.log('Loaded all tools with IDs:', toolIds);
+      return true;
     }
   }
   return false;
 }
 
 function saveToolIds(ids) {
-  // Keep all tools: show_cinemas_showtimes, show_food_items, update_cart, place_order, and whatsapp_order_confirmation
-  if (ids.show_cinemas_showtimes && ids.show_food_items && ids.update_cart && ids.place_order && ids.whatsapp_order_confirmation) {
-    toolIds = { show_cinemas_showtimes: ids.show_cinemas_showtimes, show_food_items: ids.show_food_items, update_cart: ids.update_cart, place_order: ids.place_order, whatsapp_order_confirmation: ids.whatsapp_order_confirmation };
+  // Keep all tools: show_cinemas_showtimes, show_food_items, update_cart, place_order, whatsapp_order_confirmation, play_movie_trailer, and set_movie_selection
+  if (ids.show_cinemas_showtimes && ids.show_food_items && ids.update_cart && ids.place_order && ids.whatsapp_order_confirmation && ids.play_movie_trailer && ids.set_movie_selection) {
+    toolIds = { 
+      show_cinemas_showtimes: ids.show_cinemas_showtimes, 
+      show_food_items: ids.show_food_items, 
+      update_cart: ids.update_cart, 
+      place_order: ids.place_order, 
+      whatsapp_order_confirmation: ids.whatsapp_order_confirmation,
+      play_movie_trailer: ids.play_movie_trailer,
+      set_movie_selection: ids.set_movie_selection
+    };
     fs.writeFileSync(TOOL_IDS_PATH, JSON.stringify(toolIds));
   }
 }
@@ -708,7 +724,15 @@ app.post("/api/voice", upload.single("audio"), async (req, res) => {
       // This requires a way to get default toolIds and knowledgeBaseId if they were not loaded
       // For now, we'll just log a warning and potentially create a new agent with default values
       console.warn("Agent not initialized, creating a new one with default tools/knowledge base.");
-      const defaultToolIds = { display_movie_info: null, show_cinemas_showtimes: null, show_food_items: null, update_cart: null };
+      const defaultToolIds = { 
+        show_cinemas_showtimes: null, 
+        show_food_items: null, 
+        update_cart: null, 
+        place_order: null, 
+        whatsapp_order_confirmation: null, 
+        play_movie_trailer: null, 
+        set_movie_selection: null 
+      };
       const defaultKnowledgeBaseId = null; // No default knowledge base for now
       await createAgentWithAll(defaultToolIds, defaultKnowledgeBaseId);
     }
@@ -811,7 +835,15 @@ app.delete('/api/delete-all', async (req, res) => {
     // Reset in-memory IDs
     agentId = null;
     voiceId = null;
-    toolIds = { write: null, read: null, whatsapp_order_confirmation: null };
+    toolIds = { 
+      show_cinemas_showtimes: null, 
+      show_food_items: null, 
+      update_cart: null, 
+      place_order: null, 
+      whatsapp_order_confirmation: null, 
+      play_movie_trailer: null, 
+      set_movie_selection: null 
+    };
     res.json({ success: true });
   } catch (error) {
     res.status(500).json({ error: error.message });
