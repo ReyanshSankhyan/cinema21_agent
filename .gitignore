@@ -2,5 +2,4 @@
 package-lock.json
 dist/
 node_modules/
-backend/agent_id.json
-backend/tool_ids.json
+.vercel

@@ -1,0 +1,324 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f8f7f4;
+}
+
+.top-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 16px 32px 12px 32px;
+    background: #f5f3ed;
+    border-bottom: 1px solid #ece7df;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    min-height: 50px;
+    position: relative;
+}
+.top-bar-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #2d2a22;
+    letter-spacing: 1px;
+}
+.top-bar-controls {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    font-size: 1rem;
+}
+
+.menu-button {
+    background: none;
+    border: none;
+    font-size: 1.3rem;
+    cursor: pointer;
+    color: #2d2a22;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.menu-button:hover {
+    background-color: rgba(0,0,0,0.05);
+}
+
+.menu-box {
+    position: absolute;
+    top: 100%;
+    right: 32px;
+    background: #fff;
+    border: 1px solid #ece7df;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+    padding: 16px;
+    min-width: 200px;
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 4px;
+}
+.menu-box.show {
+    display: flex;
+}
+
+.menu-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.status, .speaking-status {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 14px;
+    background: #ece7df;
+    color: #6b6657;
+    font-weight: 500;
+}
+.status.connected {
+    background-color: #b7eac7;
+    color: #1a4d2e;
+}
+.speaking-status.speaking {
+    background-color: #b7d8ea;
+    color: #1a2e4d;
+}
+
+.button {
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background 0.2s, box-shadow 0.2s;
+    background-color: #7b8c5a;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+}
+.button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+#startButton {
+    background-color: #7b8c5a;
+}
+#startButton.end {
+    background-color: #b85c5c;
+}
+#deleteAllButton {
+    background-color: #b8a05c;
+}
+
+.main-panel {
+    margin: 0;
+    width: 95%;
+    height: 650px;
+    min-height: 650px;
+    max-height: 650px;
+    background: #fff;
+    border-radius: 22px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+    padding: 24px 28px 20px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    overflow-y: auto;
+}
+
+.content-area {
+    display: flex;
+    gap: 20px;
+    padding: 20px 0 20px 16px;
+    height: calc(100vh - 120px);
+    position: relative;
+    margin-bottom: 0;
+}
+
+.main-conversation-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.cart-panel {
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    border: 1px solid #ece7df;
+    width: 300px;
+    padding: 20px 16px 20px 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    border-radius: 0;
+    margin-top: -20px;
+    margin-right: 0;
+    height: calc(100vh - 120px);
+    position: relative;
+    z-index: 10;
+}
+
+.bottom-panel {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 320px;
+    background: #fff;
+    border-top: 1px solid #ece7df;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.06);
+    height: 245px;
+    z-index: 5;
+}
+
+.bottom-panel-content {
+    padding: 20px;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+}
+
+
+
+/* Remove old info panel styles */
+.info-panels-row, .info-panel { display: none !important; }
+
+/* Avatar styles */
+.avatar {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease-out;
+}
+
+.avatar video {
+    width: 445px;
+    height: 700px;
+    object-fit: cover;
+    transition: transform 0.2s ease-out;
+}
+
+
+
+/* Modal styles for conversation summary */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.4);
+}
+.modal-content {
+  background-color: #fff;
+  margin: 8% auto;
+  padding: 28px 24px;
+  border: 1px solid #ece7df;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .main-panel {
+        height: 220px;
+        min-height: 220px;
+        max-height: 220px;
+        padding: 12px 4vw 12px 4vw;
+    }
+    .content-area {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px 2vw 16px 2vw;
+        height: auto;
+    }
+    .left-panels {
+        gap: 12px;
+    }
+    .sub-panel {
+        height: 120px;
+        padding: 10px 4vw 6px 4vw;
+    }
+    .cart-panel {
+        width: 100%;
+        height: 120px;
+        padding: 10px 4vw 6px 4vw;
+    }
+    .top-bar {
+        flex-direction: column;
+        gap: 8px;
+        padding: 24px 2vw 12px 2vw;
+        min-height: 60px;
+    }
+}
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #f8f7f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+.loading-content {
+    text-align: center;
+    color: #2d2a22;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #ece7df;
+    border-top: 4px solid #7b8c5a;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+.loading-text {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: #6b6657;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
